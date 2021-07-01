@@ -54,9 +54,14 @@ namespace CasaDoCodigo.Controllers
             return View(pedido.Cadastro);
         }
 
-        public async Task<IActionResult> BuscaDeProdutos()
+        public async Task<IActionResult> BuscaDeProdutos(string filtro)
         {
-            return View(produtoRepository.GetProdutos());
+            var produtos = await produtoRepository.GetProdutosAsync(filtro);
+            return View(new BuscaProdutoViewModel
+            {
+                Filtro = filtro,
+                Produtos = produtos
+            });
         }
 
         [HttpPost]
@@ -72,7 +77,7 @@ namespace CasaDoCodigo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<UpdateQuantidadeResponse> UpdateQuantidade([FromBody]ItemPedido itemPedido)
+        public async Task<UpdateQuantidadeResponse> UpdateQuantidade([FromBody] ItemPedido itemPedido)
         {
             return await pedidoRepository.UpdateQuantidade(itemPedido);
         }

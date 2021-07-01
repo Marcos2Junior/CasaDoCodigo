@@ -17,7 +17,25 @@ namespace CasaDoCodigo.Repositories
 
         public IList<Produto> GetProdutos()
         {
-            return dbSet.Include(x => x.Categoria).ToList();
+            return GetIncludeProduto().ToList();
+        }
+
+        public async Task<IList<Produto>> GetProdutosAsync(string filtro)
+        {
+            if (string.IsNullOrEmpty(filtro))
+            {
+                return GetProdutos();
+            }
+
+            string filtroFormat = filtro.Trim().ToLower();
+            return await GetIncludeProduto().Where(x =>
+            x.Categoria.Nome.ToLower().Contains(filtroFormat) ||
+            x.Nome.ToLower().Contains(filtroFormat)).ToListAsync();
+        }
+
+        private Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<Produto, Categoria> GetIncludeProduto()
+        {
+            return dbSet.Include(x => x.Categoria);
         }
 
         public async Task SaveProdutos(List<Livro> livros)
